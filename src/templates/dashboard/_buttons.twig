@@ -1,0 +1,14 @@
+{% if currentUser.can('syncProducts-craft-shopify-sync') %}
+    {% for button in [
+        { label: 'Re-sync all'|t('craft-shopify-sync'), force: true },
+        { label: 'Sync changes'|t('craft-shopify-sync'), force: false },
+    ] %}
+        <form method="post" accept-charset="UTF-8">
+            {{ csrfInput() }}
+            {{ actionInput('craft-shopify-sync/sync/sync-all') }}
+            {{ redirectInput('craft-shopify-sync') }}
+            {{ hiddenInput('force', button.force ? '1' : '') }}
+            <button type="submit" class="btn {{ not button.force ? 'submit' }}" data-icon="refresh" {{ not isReady ? 'disabled' }}>{{ button.label }}</button>
+        </form>
+    {% endfor %}
+{% endif %}

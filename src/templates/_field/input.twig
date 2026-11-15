@@ -1,0 +1,63 @@
+<div class="shopify-sync-field">
+    {% if not entryId %}
+        <p class="light">{{ 'Available once the entry is saved.'|t('craft-shopify-sync') }}</p>
+    {% else %}
+        <div class="shopify-sync-field__header">
+            <div class="shopify-sync-field__status">
+                {{ statusHtml }}
+                {% if isDraft %}
+                    <span class="light">{{ 'Draft changes sync when applied.'|t('craft-shopify-sync') }}</span>
+                {% elseif upToDate is same as(true) %}
+                    <span class="light">{{ 'Up to date'|t('craft-shopify-sync') }}</span>
+                {% elseif upToDate is same as(false) %}
+                    <span class="shopify-sync-pending">{{ 'Has unsynced changes'|t('craft-shopify-sync') }}</span>
+                {% endif %}
+                {% if record and record.lastSyncedAt %}
+                    <span class="light" title="{{ record.getLastSyncedDate()|datetime('short') }}">
+                        {{ 'Last synced {time}'|t('craft-shopify-sync', { time: record.getLastSyncedDate()|timestamp('short', withPreposition=true) }) }}
+                    </span>
+                {% endif %}
+            </div>
+
+            <div class="flex">
+                {% if record and record.getAdminUrl() %}
+                    <a class="btn small" href="{{ record.getAdminUrl() }}" target="_blank" rel="noopener" data-icon="external">{{ 'View in Shopify'|t('craft-shopify-sync') }}</a>
+                {% endif %}
+                {% if canSync %}
+                    <button type="button" class="btn small" data-icon="refresh" data-shopify-sync="{{ entryId }}">{{ 'Sync now'|t('craft-shopify-sync') }}</button>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if record and record.lastError %}
+            <div class="shopify-sync-field__error error">
+                <strong>{{ 'Shopify rejected the last sync:'|t('craft-shopify-sync') }}</strong>
+                {{ record.lastError }}
+            </div>
+        {% endif %}
+
+        {% if previewError %}
+            <p class="error">{{ previewError }}</p>
+        {% elseif rows is not empty %}
+            <details class="shopify-sync-preview">
+                <summary>{{ 'Data sent to Shopify'|t('craft-shopify-sync') }}</summary>
+                <table class="data fullwidth">
+                    <tbody>
+                        {% for row in rows %}
+                            <tr>
+                                <th scope="row"><code>{{ row.label }}</code></th>
+                                <td>
+                                    {% if row.value is null or row.value == '' %}
+                                        <span class="light">{{ 'Empty, cleared in Shopify'|t('craft-shopify-sync') }}</span>
+                                    {% else %}
+                                        {{ row.value|length > 300 ? row.value|slice(0, 300) ~ '…' : row.value }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </details>
+        {% endif %}
+    {% endif %}
+</div>

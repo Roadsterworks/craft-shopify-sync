@@ -1,0 +1,93 @@
+{% import '_includes/forms' as forms %}
+{% set section = mappingData.section %}
+{% set customTarget = constant('roadsterworks\\craftshopifysync\\models\\FieldMapping::CUSTOM_TARGET') %}
+
+<p class="light">{{ 'Title and slug are sent as the Shopify title and handle unless other fields are mapped to them. Re-sync all after changing mappings.'|t('craft-shopify-sync') }}</p>
+
+{% if errors is not empty %}
+    <div class="pane">
+        {% include '_includes/forms/errorList' with { errors } only %}
+    </div>
+{% endif %}
+
+{% if mappingData.definitionsError %}
+    <p class="warning with-icon">{{ mappingData.definitionsError }}</p>
+{% elseif section %}
+    <a class="btn small" data-icon="refresh" href="{{ cpUrl('craft-shopify-sync/field-mapping', { refresh: 1 }) }}">
+        {{ 'Refresh metafields'|t('craft-shopify-sync') }}
+    </a>
+{% endif %}
+
+{% if not section %}
+    <div class="zilch">
+        <p>{{ 'Choose a product section in the settings first.'|t('craft-shopify-sync') }}</p>
+    </div>
+{% elseif mappingData.entryTypes is empty %}
+    <div class="zilch">
+        <p>{{ '“{section}” has no entry types.'|t('craft-shopify-sync', { section: section.name }) }}</p>
+    </div>
+{% else %}
+    {% for entryType in mappingData.entryTypes %}
+        <div class="pane">
+            <h2>{{ entryType.name }} <code class="light smalltext">{{ entryType.handle }}</code></h2>
+
+            <table class="data fullwidth shopify-sync-mapping">
+                <thead>
+                    <tr>
+                        <th scope="col">{{ 'Craft field'|t('craft-shopify-sync') }}</th>
+                        <th scope="col">{{ 'Type'|t('craft-shopify-sync') }}</th>
+                        <th scope="col">{{ 'Shopify destination'|t('craft-shopify-sync') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for field in entryType.fields %}
+                        {% set namePrefix = "mappings[#{entryType.handle}][#{field.handle}]" %}
+                        {% set isCustom = field.target == customTarget %}
+                        <tr data-mapping-row>
+                            <th scope="row">
+                                {{ field.name }}<br>
+                                <code class="light smalltext">{{ field.handle }}</code>
+                            </th>
+                            <td class="light">{{ field.type }}</td>
+                            <td>
+                                {{ forms.select({
+                                    name: "#{namePrefix}[target]",
+                                    value: field.target,
+                                    options: mappingData.targetOptions,
+                                    inputAttributes: {
+                                        'data-mapping-target': true,
+                                        'data-custom-value': customTarget,
+                                        aria: { label: 'Shopify destination for {field}'|t('craft-shopify-sync', { field: field.name }) },
+                                    },
+                                }) }}
+
+                                <div class="shopify-sync-custom {{ not isCustom ? 'hidden' }}" data-custom-metafield>
+                                    {{ forms.text({
+                                        name: "#{namePrefix}[namespace]",
+                                        value: isCustom ? field.mapping.namespace : '',
+                                        placeholder: 'namespace'|t('craft-shopify-sync'),
+                                        code: true,
+                                        inputAttributes: { aria: { label: 'Metafield namespace'|t('craft-shopify-sync') } },
+                                    }) }}
+                                    {{ forms.text({
+                                        name: "#{namePrefix}[key]",
+                                        value: isCustom ? field.mapping.key : '',
+                                        placeholder: 'key'|t('craft-shopify-sync'),
+                                        code: true,
+                                        inputAttributes: { aria: { label: 'Metafield key'|t('craft-shopify-sync') } },
+                                    }) }}
+                                    {{ forms.select({
+                                        name: "#{namePrefix}[type]",
+                                        value: isCustom ? field.mapping.type : '',
+                                        options: mappingData.metafieldTypeOptions,
+                                        inputAttributes: { aria: { label: 'Metafield type'|t('craft-shopify-sync') } },
+                                    }) }}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+{% endif %}

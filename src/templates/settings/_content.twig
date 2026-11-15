@@ -1,0 +1,89 @@
+{% import '_includes/forms' as forms %}
+
+{% macro envField(settings, attribute, placeholder, instructions = null) %}
+    {% import '_includes/forms' as forms %}
+    {{ forms.autosuggestField({
+        label: settings.getAttributeLabel(attribute),
+        instructions: instructions,
+        id: attribute,
+        name: "settings[#{attribute}]",
+        value: settings[attribute],
+        placeholder: placeholder,
+        suggestEnvVars: true,
+        required: true,
+        errors: settings.getErrors(attribute),
+    }) }}
+{% endmacro %}
+
+<h2>{{ 'Connection'|t('craft-shopify-sync') }}</h2>
+
+{% if isAuthorised %}
+    <p class="success with-icon">
+        {{ 'Connected to {store}.'|t('craft-shopify-sync', { store: settings.getStoreDomain() }) }}
+        <button type="button" class="btn small formsubmit" data-action="craft-shopify-sync/auth/disconnect" data-redirect="{{ 'craft-shopify-sync/settings'|hash }}" data-confirm="{{ 'Disconnect from Shopify? Syncing stops until you authorise again.'|t('craft-shopify-sync') }}">{{ 'Disconnect'|t('craft-shopify-sync') }}</button>
+    </p>
+{% elseif settings.hasCredentials() %}
+    <p class="warning with-icon">
+        {{ 'Not connected yet.'|t('craft-shopify-sync') }}
+        <a class="btn small submit" href="{{ settings.getAuthUrl() }}">{{ 'Authorise in Shopify'|t('craft-shopify-sync') }}</a>
+    </p>
+{% endif %}
+
+{{ forms.copytextField({
+    label: 'App URL'|t('craft-shopify-sync'),
+    instructions: 'Paste into your Dev Dashboard app’s **App URL**.'|t('craft-shopify-sync'),
+    value: settings.getAuthUrl(),
+}) }}
+
+{{ forms.copytextField({
+    label: 'Scopes'|t('craft-shopify-sync'),
+    instructions: 'Give the app these Admin API scopes.'|t('craft-shopify-sync'),
+    value: scopes,
+}) }}
+
+{{ _self.envField(settings, 'shopifyStoreName', '$SHOPIFY_STORE_NAME', 'Your store’s `.myshopify.com` domain.'|t('craft-shopify-sync')) }}
+{{ _self.envField(settings, 'shopifyClientId', '$SHOPIFY_CLIENT_ID', 'From the app’s **Settings** in the Dev Dashboard.'|t('craft-shopify-sync')) }}
+{{ _self.envField(settings, 'shopifyClientSecret', '$SHOPIFY_CLIENT_SECRET') }}
+
+<hr>
+
+<h2>{{ 'Syncing'|t('craft-shopify-sync') }}</h2>
+
+{{ forms.selectField({
+    label: settings.getAttributeLabel('productSectionHandle'),
+    instructions: 'Its entries become Shopify products.'|t('craft-shopify-sync'),
+    id: 'productSectionHandle',
+    name: 'settings[productSectionHandle]',
+    value: settings.productSectionHandle,
+    options: sectionOptions,
+    required: true,
+    errors: settings.getErrors('productSectionHandle'),
+}) }}
+
+{{ forms.lightswitchField({
+    label: settings.getAttributeLabel('syncOnSave'),
+    instructions: 'Sync product entries when they’re saved. Only entries with changes are sent.'|t('craft-shopify-sync'),
+    id: 'syncOnSave',
+    name: 'settings[syncOnSave]',
+    on: settings.syncOnSave,
+}) }}
+
+{{ forms.selectField({
+    label: settings.getAttributeLabel('creationStrategy'),
+    instructions: 'Disabled entries are always created as drafts.'|t('craft-shopify-sync'),
+    id: 'creationStrategy',
+    name: 'settings[creationStrategy]',
+    value: settings.creationStrategy,
+    options: creationStrategyOptions,
+    errors: settings.getErrors('creationStrategy'),
+}) }}
+
+{{ forms.selectField({
+    label: settings.getAttributeLabel('syncStrategy'),
+    instructions: 'What happens to the product when its entry is deleted.'|t('craft-shopify-sync'),
+    id: 'syncStrategy',
+    name: 'settings[syncStrategy]',
+    value: settings.syncStrategy,
+    options: syncStrategyOptions,
+    errors: settings.getErrors('syncStrategy'),
+}) }}

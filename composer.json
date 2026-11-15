@@ -1,0 +1,67 @@
+{
+  "name": "roadsterworks/craft-shopify-sync",
+  "description": "One-way sync of Craft CMS entries to Shopify products, with metafield mapping.",
+  "type": "craft-plugin",
+  "keywords": [
+    "craft",
+    "cms",
+    "craftcms",
+    "craft-plugin",
+    "shopify",
+    "sync",
+    "products",
+    "metafields"
+  ],
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Roadsterworks",
+      "email": "roadsterworks@gmail.com"
+    }
+  ],
+  "support": {
+    "email": "roadsterworks@gmail.com",
+    "issues": "https://github.com/roadsterworks/craft-shopify-sync/issues",
+    "source": "https://github.com/roadsterworks/craft-shopify-sync",
+    "docs": "https://github.com/roadsterworks/craft-shopify-sync#readme"
+  },
+  "require": {
+    "php": ">=8.2",
+    "craftcms/cms": "^5.9.0",
+    "gnikyt/basic-shopify-api": "^11.0"
+  },
+  "require-dev": {
+    "craftcms/ecs": "dev-main",
+    "craftcms/phpstan": "dev-main",
+    "phpstan/phpstan": "^2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "roadsterworks\\craftshopifysync\\": "src/"
+    }
+  },
+  "extra": {
+    "handle": "craft-shopify-sync",
+    "name": "Shopify Sync",
+    "developer": "Roadsterworks",
+    "documentationUrl": "https://github.com/roadsterworks/craft-shopify-sync#readme",
+    "class": "roadsterworks\\craftshopifysync\\CraftShopifySync",
+    "description": "One-way sync of Craft CMS entries to Shopify products, with metafield mapping.",
+    "changelogUrl": "https://github.com/roadsterworks/craft-shopify-sync/blob/main/CHANGELOG.md"
+  },
+  "scripts": {
+    "check-cs": "ecs check --ansi",
+    "fix-cs": "ecs check --ansi --fix",
+    "phpstan": "phpstan --memory-limit=1G"
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "8.2"
+    },
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
+  }
+}

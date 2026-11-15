@@ -1,0 +1,104 @@
+/* Dashboard */
+.shopify-sync-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--m);
+    margin-bottom: var(--l);
+}
+
+.shopify-sync-stats .pane {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0;
+}
+
+.shopify-sync-stat__label {
+    display: flex;
+    align-items: baseline;
+    gap: var(--xs);
+    margin: 0 0 var(--s);
+    font-weight: normal;
+    color: var(--medium-text-color);
+}
+
+.shopify-sync-stat__value {
+    margin: 0;
+    font-size: 2em;
+    font-weight: bold;
+    line-height: 1.2;
+}
+
+
+
+.shopify-sync-danger {
+    border: 1px solid var(--error-color);
+}
+
+.shopify-sync-danger h2 {
+    color: var(--error-color);
+}
+
+.shopify-sync-danger .text {
+    max-width: 240px;
+}
+
+.shopify-sync-failed td.error {
+    word-break: break-word;
+}
+
+/* Field mapping */
+.shopify-sync-mapping th[scope="row"] {
+    width: 35%;
+}
+
+.shopify-sync-custom {
+    display: grid;
+    grid-template-columns: 1fr 1fr minmax(0, 1fr);
+    gap: var(--s);
+    margin-top: var(--s);
+}
+
+.shopify-sync-custom.hidden {
+    display: none;
+}
+
+/* Shopify Product field */
+.shopify-sync-field__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s);
+}
+
+.shopify-sync-field__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s);
+}
+
+.shopify-sync-pending {
+    color: var(--warning-color, #b45309);
+}
+
+.shopify-sync-field__error {
+    margin-top: var(--m);
+    padding: var(--s) var(--m);
+    border-radius: var(--small-border-radius);
+    background-color: var(--red-050, #fef2f2);
+}
+
+.shopify-sync-preview {
+    margin-top: var(--m);
+}
+
+.shopify-sync-preview summary {
+    cursor: pointer;
+    margin-bottom: var(--s);
+}
+
+.shopify-sync-preview td {
+    word-break: break-word;
+}

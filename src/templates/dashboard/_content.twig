@@ -1,0 +1,122 @@
+{% import '_includes/forms' as forms %}
+
+{% set statCards = {
+    craftProducts: { label: 'Products'|t('craft-shopify-sync'), color: 'blue' },
+    synced: { label: 'Synced'|t('craft-shopify-sync'), color: 'green' },
+    notSynced: { label: 'Not synced'|t('craft-shopify-sync'), color: 'gray' },
+    failed: { label: 'Failed'|t('craft-shopify-sync'), color: 'red' },
+    unpublished: { label: 'Unpublished'|t('craft-shopify-sync'), color: 'orange' },
+    shopifyProducts: { label: 'In Shopify'|t('craft-shopify-sync'), color: 'teal' },
+} %}
+
+<div data-shopify-sync-dashboard data-ready="{{ isReady ? 1 : 0 }}">
+    {% if not isReady %}
+        <p class="warning with-icon">
+            {{ 'Not set up yet.'|t('craft-shopify-sync') }}
+            {% if currentUser.can('manageSettings-craft-shopify-sync') %}
+                <a href="{{ cpUrl('craft-shopify-sync/settings') }}">{{ 'Go to settings'|t('craft-shopify-sync') }}</a>
+            {% endif %}
+        </p>
+    {% else %}
+        <p class="light" data-connection>
+            {{ statusIndicator('gray') }} {{ 'Connecting to {store}…'|t('craft-shopify-sync', { store: storeDomain }) }}
+        </p>
+        <template data-connected>{{ statusIndicator('green') }} {{ 'Connected to {store}'|t('craft-shopify-sync', { store: storeDomain }) }}</template>
+    {% endif %}
+
+    <div class="shopify-sync-stats">
+        {% for key, card in statCards %}
+            <div class="pane">
+                <h3 class="shopify-sync-stat__label">{{ statusIndicator(card.color, { label: null }) }}{{ card.label }}</h3>
+                <p class="shopify-sync-stat__value" data-stat="{{ key }}">{{ stats[key] is not null ? stats[key]|number : '–' }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if failed is not empty %}
+    <h2>{{ 'Needs attention'|t('craft-shopify-sync') }}</h2>
+    <div class="tableview">
+        <table class="data fullwidth shopify-sync-failed">
+            <thead>
+                <tr>
+                    <th scope="col">{{ 'Entry'|t('craft-shopify-sync') }}</th>
+                    <th scope="col">{{ 'Shopify said'|t('craft-shopify-sync') }}</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in failed %}
+                    <tr>
+                        <th scope="row">{{ row.entry ? elementChip(row.entry, { hyperlink: true }) : tag('span', { class: 'light', text: 'Deleted entry'|t('craft-shopify-sync') }) }}</th>
+                        <td class="error">{{ row.record.lastError }}</td>
+                        <td class="thin">
+                            {% if row.entry and currentUser.can('syncProducts-craft-shopify-sync') %}
+                                <button type="button" class="btn small" data-icon="refresh" data-shopify-sync="{{ row.entry.id }}">{{ 'Retry'|t('craft-shopify-sync') }}</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+<h2>{{ 'Recent activity'|t('craft-shopify-sync') }}</h2>
+
+{% if recentActivity is empty %}
+    <div class="zilch"><p>{{ 'Nothing synced yet.'|t('craft-shopify-sync') }}</p></div>
+{% else %}
+    <div class="tableview">
+        <table class="data fullwidth">
+            <thead>
+                <tr>
+                    <th scope="col">{{ 'Entry'|t('craft-shopify-sync') }}</th>
+                    <th scope="col">{{ 'Status'|t('craft-shopify-sync') }}</th>
+                    <th scope="col">{{ 'Last synced'|t('craft-shopify-sync') }}</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in recentActivity %}
+                    {% set record = row.record %}
+                    {% set lastSynced = record.getLastSyncedDate() %}
+                    <tr>
+                        <th scope="row">
+                            {{ row.entry ? elementChip(row.entry, { hyperlink: true }) : tag('span', { class: 'light', text: 'Deleted entry'|t('craft-shopify-sync') }) }}
+                        </th>
+                        <td>{{ record.getStatusHtml() }}</td>
+                        <td>{{ lastSynced ? lastSynced|timestamp('short') : '–' }}</td>
+                        <td class="thin">
+                            {% if record.getAdminUrl() %}
+                                <a class="go" href="{{ record.getAdminUrl() }}" target="_blank" rel="noopener">{{ 'View in Shopify'|t('craft-shopify-sync') }}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+{% if isReady and currentUser.can('deleteProducts-craft-shopify-sync') %}
+    <hr>
+
+    <div class="pane shopify-sync-danger">
+        <h2>{{ 'Danger zone'|t('craft-shopify-sync') }}</h2>
+        <p>{{ 'Deletes **every** product in Shopify, including ones not from Craft. Entries are kept. Can’t be undone.'|t('craft-shopify-sync')|md(inlineOnly=true) }}</p>
+        <form method="post" accept-charset="UTF-8" class="flex">
+            {{ csrfInput() }}
+            {{ actionInput('craft-shopify-sync/sync/delete-all-shopify-products') }}
+            {{ redirectInput('craft-shopify-sync') }}
+            {{ forms.text({
+                name: 'confirm',
+                placeholder: 'Type DELETE'|t('craft-shopify-sync'),
+                autocomplete: false,
+                required: true,
+                inputAttributes: { pattern: 'DELETE', aria: { label: 'Type DELETE to confirm'|t('craft-shopify-sync') } },
+            }) }}
+            <button type="submit" class="btn caution" data-icon="remove">{{ 'Delete all Shopify products'|t('craft-shopify-sync') }}</button>
+        </form>
+    </div>
+{% endif %}
