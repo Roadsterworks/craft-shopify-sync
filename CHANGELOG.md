@@ -1,6 +1,6 @@
 # Release Notes for Shopify Sync
 
-## Unreleased
+## 1.0.1 - 2026-11-16
 
 - Added a [roadmap](ROADMAP.md): prices and SKUs, then variants.
 - Excluded docs, screenshots and development config from Composer installs.
