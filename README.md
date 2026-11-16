@@ -33,6 +33,8 @@ Craft is the source of truth: edits made to synced data directly in Shopify are 
 |---|---|---|
 | ![Field mapping](resources/screenshots/field-mapping.png) | ![Settings](resources/screenshots/settings.png) | ![Shopify tab](resources/screenshots/entry-shopify-tab.png) |
 
+![Shopify status columns in the entries index](resources/screenshots/entries-index.png)
+
 ## Requirements
 
 - Craft CMS 5.9 or later, and PHP 8.2 or later
@@ -190,6 +192,11 @@ This removes the Shopify tab and the plugin's database tables. Your Shopify prod
 
 The dashboard's **Danger zone** can delete every product in your store, which is handy for resetting a dev store.
 It can't be undone.
+
+## Roadmap
+
+Prices and SKUs are next, then variants from a Matrix field. See the [roadmap](ROADMAP.md) for what's planned, and the
+[changelog](CHANGELOG.md) for what's changed.
 
 ## Licence and support
 

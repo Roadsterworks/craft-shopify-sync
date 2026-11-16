@@ -1,0 +1,43 @@
+name: Bug report
+description: Something isn't working as expected.
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Map the “Weight” field to a decimal metafield
+        2. Save a product entry
+        3. …
+  - type: textarea
+    id: logs
+    attributes:
+      label: Errors and logs
+      description: >
+        The error shown on the entry or dashboard, and relevant lines from
+        `storage/logs/craft-shopify-sync-YYYY-MM-DD.log`. Remove any access tokens or secrets first.
+      render: text
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Shopify Sync version
+    validations:
+      required: true
+  - type: input
+    id: craft-version
+    attributes:
+      label: Craft CMS version
+    validations:
+      required: true
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
